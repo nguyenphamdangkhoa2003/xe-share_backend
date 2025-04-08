@@ -8,6 +8,10 @@ import { errorHandler } from './middlewares/errorHandler';
 import { HTTPSTATUS } from './config/http.config';
 import { asyncHandler } from './middlewares/asyncHandler';
 import authRoutes from './modules/auth/auth.routes';
+import passport from './middlewares/passport';
+import sessionRoutes from './modules/session/session.routes';
+import { authenticateJWT } from './common/strategies/jwt.strategy';
+import mfaRoutes from './modules/mfa/mfa.routes';
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -22,18 +26,22 @@ app.use(
 );
 
 app.use(cookieParser());
+app.use(passport.initialize());
 
 app.get(
     '/',
     asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         res.status(HTTPSTATUS.OK).json({
-            message: 'Hello world!!!',
+            message: 'Hello Subscribers!!!',
         });
     })
 );
 
-//ROUTES
 app.use(`${BASE_PATH}/auth`, authRoutes);
+
+app.use(`${BASE_PATH}/mfa`, mfaRoutes);
+
+app.use(`${BASE_PATH}/session`, authenticateJWT, sessionRoutes);
 
 app.use(errorHandler);
 
