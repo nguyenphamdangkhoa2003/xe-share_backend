@@ -150,4 +150,10 @@ export class AuthController {
             });
         }
     );
+
+    public handleGoogleCallback = asyncHandler(
+        async (req: Request, res: Response): Promise<any> => {
+            
+        }
+    );
 }

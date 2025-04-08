@@ -1,12 +1,23 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { compareValue, hashValue } from '../../common/utils/bcrypt';
 
+// Interface for User Preferences
 interface UserPreferences {
     enable2FA: boolean;
     emailNotification: boolean;
     twoFactorSecret?: string;
 }
 
+// Simplified External Account interface for User model
+export interface ExternalAccount {
+    provider: 'google';
+    id: string;
+    name: string;
+    emails: { value: string; type?: string }[];
+    picture: string;
+}
+
+// User Document interface
 export interface UserDocument extends Document {
     name: string;
     email: string;
@@ -15,14 +26,51 @@ export interface UserDocument extends Document {
     createdAt: Date;
     updatedAt: Date;
     userPreferences: UserPreferences;
+    externalAccount?: ExternalAccount; // Optional, since not all users may use external accounts
     comparePassword(value: string): Promise<boolean>;
 }
+
+// User Preferences Schema
 const userPreferencesSchema = new Schema<UserPreferences>({
     enable2FA: { type: Boolean, default: false },
     emailNotification: { type: Boolean, default: true },
     twoFactorSecret: { type: String, required: false },
 });
 
+// Simplified External Account Schema
+const externalAccountSchema = new Schema<ExternalAccount>({
+    provider: {
+        type: String,
+        enum: ['google'],
+        required: true,
+    },
+    id: {
+        type: String,
+        required: true,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+    emails: [
+        {
+            value: {
+                type: String,
+                required: true,
+            },
+            type: {
+                type: String,
+                required: false,
+            },
+        },
+    ],
+    picture: {
+        type: String,
+        required: true,
+    },
+});
+
+// User Schema
 const userSchema = new Schema<UserDocument>(
     {
         name: {
@@ -46,12 +94,17 @@ const userSchema = new Schema<UserDocument>(
             type: userPreferencesSchema,
             default: {},
         },
+        externalAccount: {
+            type: externalAccountSchema,
+            required: false,
+        },
     },
     {
         timestamps: true,
-        toJSON: {},
     }
 );
+
+// Pre-save hook to hash password
 userSchema.pre('save', async function (next) {
     if (this.isModified('password')) {
         this.password = await hashValue(this.password);
@@ -59,10 +112,12 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
+// Method to compare password
 userSchema.methods.comparePassword = async function (value: string) {
     return compareValue(value, this.password);
 };
 
+// Transform toJSON to remove sensitive fields
 userSchema.set('toJSON', {
     transform: function (doc, ret) {
         delete ret.password;
@@ -71,5 +126,6 @@ userSchema.set('toJSON', {
     },
 });
 
+// Create and export the model
 const UserModel = mongoose.model<UserDocument>('User', userSchema);
 export default UserModel;

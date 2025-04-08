@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import cors from 'cors';
+import session from 'express-session';
 import express, { NextFunction, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import { config } from './config/app.config';
@@ -24,9 +25,20 @@ app.use(
         credentials: true,
     })
 );
-
+app.use(
+    session({
+        secret: 'your-secret-key',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            secure: false,
+            maxAge: 24 * 60 * 60 * 1000,
+        },
+    })
+);
 app.use(cookieParser());
 app.use(passport.initialize());
+app.use(passport.session());
 
 app.get(
     '/',

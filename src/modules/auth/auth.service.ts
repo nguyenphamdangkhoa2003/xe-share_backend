@@ -265,20 +265,14 @@ export class AuthService {
             validCode.code
         }&exp=${expiresAt.getTime()}`;
 
-        const { data, error } = await sendEmail({
+        const info = await sendEmail({
             to: user.email,
             ...passwordResetTemplate(resetLink),
         });
 
-        if (!data?.id) {
-            throw new InternalServerException(
-                `${error?.name} ${error?.message}`
-            );
-        }
-
         return {
             url: resetLink,
-            emailId: data.id,
+            emailId: info.messageId,
         };
     }
 
