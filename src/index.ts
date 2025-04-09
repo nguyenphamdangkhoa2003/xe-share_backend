@@ -57,7 +57,7 @@ app.use(`${BASE_PATH}/session`, authenticateJWT, sessionRoutes);
 
 app.use(errorHandler);
 
-app.listen(async () => {
+app.listen(config.PORT, async () => {
     console.log(
         `Server listening on port ${config.PORT} in ${config.NODE_ENV}`
     );
