@@ -6,6 +6,7 @@ import { config } from '../../config/app.config';
 import { PassportStatic } from 'passport';
 import { hashValue } from '../utils/bcrypt';
 import UserModel, { UserDocument } from '../../database/models/user.model';
+import { AppError } from '../utils/AppError';
 
 // Define interfaces
 interface IProfile {
@@ -19,6 +20,7 @@ interface IProfile {
     isPlusUser: boolean;
     placesLived: string[];
     language: string;
+    email: string;
     emails: { value: string; type?: string }[];
     gender: string;
     picture: string;
@@ -45,28 +47,57 @@ export const setupGoogleStrategy = (passport: PassportStatic): void => {
                 done: (error: any, user?: UserDocument | false) => void
             ) => {
                 try {
+                    // Tìm user bằng googleId
                     let user = await UserModel.findOne({
                         'externalAccount.id': profile.id,
                     });
 
+                    const primaryEmail =
+                        profile.emails && profile.emails.length > 0
+                            ? profile.emails[0].value
+                            : '';
+
                     if (!user) {
                         // Tạo user mới nếu không tồn tại
                         user = new UserModel({
-                            name: profile.name,
-                            email: profile.emails[0].value, // Lấy email chính
+                            name: profile.displayName,
+                            email: primaryEmail,
                             password: await hashValue('some-random-password'),
                             externalAccount: {
                                 provider: profile.provider,
                                 id: profile.id,
-                                name: profile.name,
+                                name: profile.displayName,
                                 emails: profile.emails,
                                 picture: profile.picture,
                             },
+                            isEmailVerified: true,
                         });
                         await user.save();
+                    } else {
+                        // Cập nhật thông tin user nếu đã tồn tại
+                        const updatedUser = await UserModel.findOneAndUpdate(
+                            { 'externalAccount.id': profile.id },
+                            {
+                                $set: {
+                                    name: profile.displayName,
+                                    email: primaryEmail,
+                                    'externalAccount.name': profile.displayName,
+                                    'externalAccount.emails': profile.emails,
+                                    'externalAccount.picture': profile.picture,
+                                    isEmailVerified: true,
+                                },
+                            },
+                            { new: true }
+                        );
+
+                        // Nếu không tìm thấy user để cập nhật (hiếm khi xảy ra vì đã kiểm tra trước)
+                        if (!updatedUser) {
+                            return done(new AppError('Failed to update user'));
+                        }
+                        user = updatedUser;
                     }
 
-                    // Trả về user với _id hợp lệ
+                    // Trả về user
                     return done(null, user);
                 } catch (error) {
                     return done(error);

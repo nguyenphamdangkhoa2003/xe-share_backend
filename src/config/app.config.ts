@@ -1,3 +1,4 @@
+import { genSalt } from 'bcryptjs';
 import { getEnv } from '../common/utils/get-env';
 
 const appConfig = () => ({
@@ -20,6 +21,7 @@ const appConfig = () => ({
     NODEMAILER_PORT: getEnv('NODEMAILER_PORT'),
     NODEMAILER_USER: getEnv('NODEMAILER_USER'),
     NODEMAILER_PASSWORD: getEnv('NODEMAILER_PASSWORD'),
+    SESSION_SECRET: getEnv('SESSION_SECRET'),
 });
 
 export const config = appConfig();

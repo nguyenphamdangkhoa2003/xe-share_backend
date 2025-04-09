@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { compareValue, hashValue } from '../../common/utils/bcrypt';
+import { RoleEnum } from '../../common/enums/role.enum';
 
 // Interface for User Preferences
 interface UserPreferences {
@@ -26,7 +27,8 @@ export interface UserDocument extends Document {
     createdAt: Date;
     updatedAt: Date;
     userPreferences: UserPreferences;
-    externalAccount?: ExternalAccount; // Optional, since not all users may use external accounts
+    externalAccount?: ExternalAccount;
+    role: RoleEnum;
     comparePassword(value: string): Promise<boolean>;
 }
 
@@ -97,6 +99,11 @@ const userSchema = new Schema<UserDocument>(
         externalAccount: {
             type: externalAccountSchema,
             required: false,
+        },
+        role: {
+            type: String,
+            enum: Object.values(RoleEnum),
+            default: RoleEnum.PASSENGER,
         },
     },
     {

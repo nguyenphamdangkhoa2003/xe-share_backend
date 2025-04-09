@@ -153,7 +153,7 @@ export class AuthController {
 
     public handleGoogleCallback = asyncHandler(
         async (req: Request, res: Response): Promise<any> => {
-            
+            return res.send('Login google Successful');
         }
     );
 }

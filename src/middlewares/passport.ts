@@ -6,7 +6,6 @@ import { AppError } from '../common/utils/AppError';
 const intializePassport = () => {
     setupJwtStrategy(passport);
     setupGoogleStrategy(passport);
-
     // Serialize user vào session
     passport.serializeUser((user: any, done) => {
         if (!user || !user._id) {

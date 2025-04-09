@@ -27,7 +27,7 @@ app.use(
 );
 app.use(
     session({
-        secret: 'your-secret-key',
+        secret: config.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
         cookie: {
@@ -57,7 +57,7 @@ app.use(`${BASE_PATH}/session`, authenticateJWT, sessionRoutes);
 
 app.use(errorHandler);
 
-app.listen(config.PORT, async () => {
+app.listen(async () => {
     console.log(
         `Server listening on port ${config.PORT} in ${config.NODE_ENV}`
     );
