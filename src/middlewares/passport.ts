@@ -7,11 +7,11 @@ const intializePassport = () => {
     setupJwtStrategy(passport);
     setupGoogleStrategy(passport);
     // Serialize user vào session
-    passport.serializeUser((user: any, done) => {
-        if (!user || !user._id) {
+    passport.serializeUser((data: any, done) => {
+        if (!data.user || !data.user._id) {
             return done(new AppError('User object is invalid or missing _id'));
         }
-        done(null, user._id);
+        done(null, data.user._id);
     });
 
     passport.deserializeUser(async (id: string, done) => {

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { asyncHandler } from '../../middlewares/asyncHandler';
 import { AuthService } from './auth.service';
 import { HTTPSTATUS } from '../../config/http.config';
@@ -19,6 +19,7 @@ import {
     NotFoundException,
     UnauthorizedException,
 } from '../../common/utils/catch-errors';
+import { config } from '../../config/app.config';
 
 export class AuthController {
     private authService: AuthService;
@@ -152,8 +153,20 @@ export class AuthController {
     );
 
     public handleGoogleCallback = asyncHandler(
-        async (req: Request, res: Response): Promise<any> => {
-            return res.send('Login google Successful');
+        async (req: any, res: Response, next: NextFunction): Promise<any> => {
+            const { user, accessToken, refreshToken, mfaRequired } = req.user;
+
+            if (mfaRequired) {
+                return res.redirect(
+                    `${config.APP_ORIGIN}/mfa?email=` + user?.email
+                );
+            }
+
+            return setAuthenticationCookies({
+                res,
+                accessToken,
+                refreshToken,
+            }).redirect(`${config.APP_ORIGIN}`);
         }
     );
 }
