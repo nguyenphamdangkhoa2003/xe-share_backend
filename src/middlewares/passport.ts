@@ -1,5 +1,5 @@
 import passport from 'passport';
-import UserModel, { UserDocument } from '../database/models/user.model';
+import UserModel from '../database/models/user.model';
 import { setupJwtStrategy } from '../common/strategies/jwt.strategy';
 import { setupGoogleStrategy } from '../common/strategies/google.strategy';
 import { AppError } from '../common/utils/AppError';

@@ -1,6 +1,6 @@
 import jwt, { SignOptions, VerifyOptions } from 'jsonwebtoken';
 import { SessionDocument } from '../../database/models/session.model';
-import { UserDocument } from '../../database/models/user.model';
+import { UserDocument } from '../interface/user.interface';
 import { config } from '../../config/app.config';
 
 export type AccessTPayload = {

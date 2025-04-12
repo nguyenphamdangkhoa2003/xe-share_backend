@@ -5,10 +5,12 @@ import {
 import { config } from '../../config/app.config';
 import { PassportStatic } from 'passport';
 import { hashValue } from '../utils/bcrypt';
-import UserModel, { UserDocument } from '../../database/models/user.model';
+import UserModel from '../../database/models/user.model';
 import { AppError } from '../utils/AppError';
 import SessionModel from '../../database/models/session.model'; // Giả sử bạn có model này
 import { signJwtToken, refreshTokenSignOptions } from '../utils/jwt'; // Hàm ký token của bạn
+import { UserDocument } from '../interface/user.interface';
+import { AvatarProviderEnum } from '../enums/avatar-provider.enum';
 
 // Define interfaces
 interface IProfile {
@@ -16,7 +18,7 @@ interface IProfile {
     id: string;
     name: string;
     displayName: string;
-    birthday: string;
+    birthday: Date;
     relationship: string;
     isPerson: boolean;
     isPlusUser: boolean;
@@ -27,6 +29,8 @@ interface IProfile {
     gender: string;
     picture: string;
     coverPhoto: string;
+    given_name: string;
+    family_name: string;
 }
 
 const options: StrategyOptionsWithRequest = {
@@ -68,11 +72,10 @@ export const setupGoogleStrategy = (passport: PassportStatic): void => {
 
                     let user = await UserModel.findOne({
                         $or: [
-                            { 'externalAccount.id': profile.id },
+                            { 'externalAccount.providerId': profile.id },
                             { email: primaryEmail },
                         ],
                     });
-
                     if (!user) {
                         user = new UserModel({
                             name: profile.displayName,
@@ -84,18 +87,25 @@ export const setupGoogleStrategy = (passport: PassportStatic): void => {
                                 emails: profile.emails,
                                 picture: profile.picture,
                             },
-                            avatar: profile.picture,
+                            birthday: profile.birthday,
+                            avatar: {
+                                provider: AvatarProviderEnum.GOOGLE,
+                                url: profile.picture,
+                            },
                             isEmailVerified: true,
-                            userPreferences: { enable2FA: false }, // Mặc định không bật 2FA
+                            userPreferences: { enable2FA: false },
                             hasImage: true,
+                            isDeleted: false,
+                            lastSignInAt: new Date(),
+                            givenName: profile.given_name,
+                            familyName: profile.family_name,
                             passwordEnable: false,
                         });
                         await user.save();
                     } else {
-                        // Kiểm tra nếu email đã liên kết với tài khoản khác
                         if (
-                            user.externalAccount?.id &&
-                            user.externalAccount.id !== profile.id
+                            user.externalAccount?.providerId &&
+                            user.externalAccount.providerId !== profile.id
                         ) {
                             return done(
                                 new AppError(
@@ -110,15 +120,22 @@ export const setupGoogleStrategy = (passport: PassportStatic): void => {
                         user.email = primaryEmail;
                         user.externalAccount = {
                             provider: profile.provider,
-                            id: profile.id,
+                            providerId: profile.id,
                             name: profile.displayName,
                             emails: profile.emails,
                             picture: profile.picture,
                         };
                         user.isEmailVerified = true;
-                        user.avatar = profile.picture;
+                        user.avatar = {
+                            provider: AvatarProviderEnum.GOOGLE,
+                            url: profile.picture,
+                        };
                         user.hasImage = true;
-                        
+                        user.birthday = profile.birthday;
+                        user.givenName = profile.given_name;
+                        user.familyName = profile.family_name;
+                        user.lastSignInAt = new Date();
+                        user.isDeleted = false;
                         await user.save();
                     }
                     // Kiểm tra 2FA

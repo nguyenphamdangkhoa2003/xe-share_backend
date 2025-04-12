@@ -3,6 +3,7 @@ import cors from 'cors';
 import session from 'express-session';
 import express, { NextFunction, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 import { config } from './config/app.config';
 import connectDatabase from './database/database';
 import { errorHandler } from './middlewares/errorHandler';
@@ -13,6 +14,7 @@ import passport from './middlewares/passport';
 import sessionRoutes from './modules/session/session.routes';
 import { authenticateJWT } from './common/strategies/jwt.strategy';
 import mfaRoutes from './modules/mfa/mfa.routes';
+import { userRoutes } from './modules/user/user.routes';
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -24,6 +26,9 @@ app.use(
         origin: config.APP_ORIGIN,
         credentials: true,
     })
+);
+app.use(
+    morgan(':method :url :status :res[content-length] - :response-time ms')
 );
 app.use(
     session({
@@ -54,6 +59,8 @@ app.use(`${BASE_PATH}/auth`, authRoutes);
 app.use(`${BASE_PATH}/mfa`, mfaRoutes);
 
 app.use(`${BASE_PATH}/session`, authenticateJWT, sessionRoutes);
+
+app.use(`${BASE_PATH}/users`, userRoutes);
 
 app.use(errorHandler);
 

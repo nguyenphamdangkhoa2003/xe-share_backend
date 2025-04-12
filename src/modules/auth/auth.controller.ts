@@ -166,7 +166,7 @@ export class AuthController {
                 res,
                 accessToken,
                 refreshToken,
-            }).redirect(`${config.APP_ORIGIN}`);
+            }).redirect(`${config.APP_ORIGIN}?google=true`);
         }
     );
 }

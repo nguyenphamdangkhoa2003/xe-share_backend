@@ -135,6 +135,9 @@ export class AuthService {
         );
 
         logger.info(`Login successful for user ID: ${user._id}`);
+
+        user.lastSignInAt = new Date();
+
         return {
             user,
             accessToken,

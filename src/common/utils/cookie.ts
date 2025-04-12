@@ -11,9 +11,9 @@ type CookiePayloadType = {
 export const REFRESH_PATH = `${config.BASE_PATH}/auth/refresh`;
 
 const defaults: CookieOptions = {
-    httpOnly: true,
-    //secure: config.NODE_ENV === "production" ? true : false,
-    //sameSite: config.NODE_ENV === "production" ? "strict" : "lax",
+    secure: config.NODE_ENV === 'production',
+    sameSite: config.NODE_ENV === 'production' ? 'strict' : 'lax',
+    httpOnly: true, // Mặc định là true cho bảo mật
 };
 
 export const getRefreshTokenCookieOptions = (): CookieOptions => {
@@ -23,6 +23,7 @@ export const getRefreshTokenCookieOptions = (): CookieOptions => {
         ...defaults,
         expires,
         path: REFRESH_PATH,
+        httpOnly: true, // Đảm bảo refreshToken luôn httpOnly
     };
 };
 
@@ -33,6 +34,7 @@ export const getAccessTokenCookieOptions = (): CookieOptions => {
         ...defaults,
         expires,
         path: '/',
+        httpOnly: false, // Cho phép JS đọc accessToken
     };
 };
 
@@ -46,6 +48,6 @@ export const setAuthenticationCookies = ({
         .cookie('refreshToken', refreshToken, getRefreshTokenCookieOptions());
 
 export const clearAuthenticationCookies = (res: Response): Response =>
-    res.clearCookie('accessToken').clearCookie('refreshToken', {
-        path: REFRESH_PATH,
-    });
+    res
+        .clearCookie('accessToken', getAccessTokenCookieOptions())
+        .clearCookie('refreshToken', getRefreshTokenCookieOptions());
