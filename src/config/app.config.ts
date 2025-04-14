@@ -22,6 +22,9 @@ const appConfig = () => ({
     NODEMAILER_USER: getEnv('NODEMAILER_USER'),
     NODEMAILER_PASSWORD: getEnv('NODEMAILER_PASSWORD'),
     SESSION_SECRET: getEnv('SESSION_SECRET'),
+    MAP_PROVIDER: getEnv('MAP_PROVIDER', 'gomaps'), 
+    GOONG_API_KEY: getEnv('GOONG_API_KEY'),
+    GOMAPS_API_KEY: getEnv('GOMAPS_API_KEY'),
 });
 
 export const config = appConfig();

@@ -15,7 +15,7 @@ import sessionRoutes from './modules/session/session.routes';
 import { authenticateJWT } from './common/strategies/jwt.strategy';
 import mfaRoutes from './modules/mfa/mfa.routes';
 import { userRoutes } from './modules/user/user.routes';
-
+import directionRoutes from './modules/trip/trip.routes';
 const app = express();
 const BASE_PATH = config.BASE_PATH;
 
@@ -61,6 +61,8 @@ app.use(`${BASE_PATH}/mfa`, mfaRoutes);
 app.use(`${BASE_PATH}/session`, authenticateJWT, sessionRoutes);
 
 app.use(`${BASE_PATH}/users`, userRoutes);
+
+app.use(`${BASE_PATH}/trip`, directionRoutes);
 
 app.use(errorHandler);
 
