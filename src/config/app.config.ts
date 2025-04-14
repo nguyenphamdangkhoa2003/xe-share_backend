@@ -22,6 +22,8 @@ const appConfig = () => ({
     NODEMAILER_USER: getEnv('NODEMAILER_USER'),
     NODEMAILER_PASSWORD: getEnv('NODEMAILER_PASSWORD'),
     SESSION_SECRET: getEnv('SESSION_SECRET'),
+    PUBLIC_STREAM_KEY: getEnv('PUBLIC_STREAM_KEY'),
+    STREAM_SECRET: getEnv('STREAM_SECRET'),
 });
 
 export const config = appConfig();

@@ -1,7 +1,8 @@
 import { Router } from 'express';
+import { chatController } from './chat.module';
 
-const chatRoutes = Router();
+const chatRoute = Router();
 
-chatRoutes.post('');
+chatRoute.get('/get-token/:user_id', chatController.getToken);
 
-export { chatRoutes };
+export { chatRoute };
