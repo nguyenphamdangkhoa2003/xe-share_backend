@@ -11,6 +11,7 @@ userRoutes.post('/ban', userController.banUserById);
 userRoutes.post('/unban', userController.unbanUserById);
 userRoutes.put('/:user_id', userController.updateUserById);
 userRoutes.put('/set-password/:user_id', userController.setPasswordUserById);
+userRoutes.put('/:user_id/role', userController.updateUserRole);
 userRoutes.put(
     '/set-avatar/:user_id',
     uploadSingle('avatar'),

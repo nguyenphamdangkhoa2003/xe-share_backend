@@ -1,3 +1,4 @@
+import { object } from 'zod';
 import {
     InternalServerException,
     NotFoundException,
@@ -7,6 +8,7 @@ import UserModel from '../../database/models/user.model';
 import { avatarService } from '../avatar/avatar.module';
 import { SessionService } from '../session/session.service';
 import { userService } from './user.module';
+import { RoleEnum } from '../../common/enums/role.enum';
 
 export class UserService {
     public async findUserById(userId: string) {
@@ -120,4 +122,16 @@ export class UserService {
         user.save();
         return user;
     }
-}
+   
+    public async updateUserRole(user_id: string, role: RoleEnum) {
+        const user = await UserModel.findByIdAndUpdate(
+            user_id,
+            { role },
+            { new: true }
+        );
+        if (!user) {
+            throw new NotFoundException('Không tìm thấy người dùng');
+        }
+        return user;
+    }
+}   

@@ -6,5 +6,6 @@ const directionRoutes = Router();
 
 directionRoutes.get('/search-direction',directionController.getDirections);
 directionRoutes.get('/autocomplete', directionController.getPlaceAutocomplete);
+directionRoutes.get('/geocode', directionController.getGeocode);
 
 export default directionRoutes;

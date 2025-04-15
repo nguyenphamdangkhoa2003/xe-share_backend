@@ -7,6 +7,7 @@ import {
 } from '../../common/utils/catch-errors';
 import { HTTPSTATUS } from '../../config/http.config';
 import { AvatarService } from '../avatar/avatar.service';
+import { RoleEnum } from '../../common/enums/role.enum';
 
 export class UserController {
     private userService: UserService;
@@ -108,4 +109,23 @@ export class UserController {
             });
         }
     );
+
+    public updateUserRole = asyncHandler(async (req: Request, res: Response) => {
+        const user_id = req.params.user_id;
+        const { role } = req.body;
+
+        if (!user_id) throw new BadRequestException('User id is required');
+        if (!role) throw new BadRequestException('Role is required');
+        if (!Object.values(RoleEnum).includes(role)) {
+            throw new BadRequestException('Invalid role');
+        }
+
+        const user = await this.userService.updateUserRole(user_id, role as RoleEnum);
+        
+        return res.status(HTTPSTATUS.OK).json({
+            success: true,
+            data: user,
+            message: `User role updated successfully to ${role}`
+        });
+    });
 }

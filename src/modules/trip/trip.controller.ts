@@ -15,6 +15,10 @@ const autocompleteSchema = z.object({
   input: z.string().min(1, 'Input is required'),
 });
 
+const geocodeSchema = z.object({
+  address: z.string().min(1, 'Address is required'),
+});
+
 export class DirectionController {
   private directionService: DirectionService;
 
@@ -45,6 +49,17 @@ export class DirectionController {
     return res.status(HTTPSTATUS.OK).json({
       message: 'Autocomplete suggestions retrieved successfully',
       data: suggestions,
+    });
+  });
+
+  public getGeocode = asyncHandler(async (req: Request, res: Response) => {
+    const { address } = geocodeSchema.parse(req.query);
+
+    const geocode = await this.directionService.getGeocode(address);
+
+    return res.status(HTTPSTATUS.OK).json({
+      message: 'Geocode retrieved successfully',
+      data: geocode,
     });
   });
 }
