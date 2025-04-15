@@ -24,6 +24,9 @@ const appConfig = () => ({
     SESSION_SECRET: getEnv('SESSION_SECRET'),
     PUBLIC_STREAM_KEY: getEnv('PUBLIC_STREAM_KEY'),
     STREAM_SECRET: getEnv('STREAM_SECRET'),
+    MAP_PROVIDER: getEnv('MAP_PROVIDER', 'gomaps'), 
+    GOONG_API_KEY: getEnv('GOONG_API_KEY'),
+    GOMAPS_API_KEY: getEnv('GOMAPS_API_KEY'),
 });
 
 export const config = appConfig();
