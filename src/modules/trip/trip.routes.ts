@@ -1,11 +1,13 @@
 // src/modules/direction/direction.routes.ts
 import { Router } from 'express';
-import { directionController } from './trip.module';
+import { tripController } from './trip.module';
+import { authenticateJWT } from '../../common/strategies/jwt.strategy';
 
-const directionRoutes = Router();
+const tripRoutes = Router();
 
-directionRoutes.get('/search-direction',directionController.getDirections);
-directionRoutes.get('/autocomplete', directionController.getPlaceAutocomplete);
-directionRoutes.get('/geocode', directionController.getGeocode);
-
-export default directionRoutes;
+tripRoutes.get('/search-direction',tripController.getDirections);
+tripRoutes.get('/autocomplete', tripController.getPlaceAutocomplete);
+tripRoutes.get('/geocode', tripController.getGeocode);
+tripRoutes.post('/create-trip', tripController.createTrip);
+tripRoutes.get('/search', tripController.searchTrips);
+export default tripRoutes;

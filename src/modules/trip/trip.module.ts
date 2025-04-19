@@ -1,8 +1,7 @@
-// src/modules/direction/direction.module.ts
-import { DirectionController } from './trip.controller';
-import { DirectionService } from './trip.service';
+import { TripController } from './trip.controller';
+import { TripService } from './trip.service';
 
-const directionService = new DirectionService();
-const directionController = new DirectionController(directionService);
+const tripService = new TripService();
+const tripController = new TripController(tripService);
 
-export { directionService, directionController };
+export { tripService, tripController };
