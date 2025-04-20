@@ -156,6 +156,7 @@ export class AuthController {
     public handleGoogleCallback = asyncHandler(
         async (req: any, res: Response, next: NextFunction): Promise<any> => {
             const { user, accessToken, refreshToken, mfaRequired } = req.user;
+            console.log('refreshToken in handleGoogleCallback', refreshToken);
 
             if (mfaRequired) {
                 return res.redirect(
