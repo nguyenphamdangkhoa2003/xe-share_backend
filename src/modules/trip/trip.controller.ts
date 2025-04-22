@@ -50,6 +50,9 @@ const searchTripSchema = z.object({
   ),
 });
 
+const getTripByIdSchema = z.object({
+  tripId: z.string().min(1, 'Trip ID is required'),
+});
 // TripController
 export class TripController {
   private tripService: TripService;
@@ -135,6 +138,17 @@ export class TripController {
     return res.status(HTTPSTATUS.OK).json({
       message: 'Trips found successfully',
       data: trips,
+    });
+  });
+
+  public getTripById = asyncHandler(async (req: Request, res: Response) => {
+    const { tripId } = getTripByIdSchema.parse(req.params);
+
+    const trip = await this.tripService.getTripById(tripId);
+
+    return res.status(HTTPSTATUS.OK).json({
+      message: 'Trip retrieved successfully',
+      data: trip,
     });
   });
 }

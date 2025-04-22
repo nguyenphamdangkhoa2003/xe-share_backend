@@ -10,4 +10,6 @@ tripRoutes.get('/autocomplete', tripController.getPlaceAutocomplete);
 tripRoutes.get('/geocode', tripController.getGeocode);
 tripRoutes.post('/create-trip', tripController.createTrip);
 tripRoutes.get('/search', tripController.searchTrips);
+tripRoutes.get('/:tripId', tripController.getTripById);
+
 export default tripRoutes;

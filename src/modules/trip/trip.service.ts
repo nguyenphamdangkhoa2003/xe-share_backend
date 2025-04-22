@@ -312,4 +312,18 @@ export class TripService {
             throw new NotFoundException('Failed to search trips');
         }
     }
+    public async getTripById(tripId: string): Promise<RouteTripDocument> {
+        const trip = await RouteTripModel.findOne({
+            _id: tripId,
+            isDeleted: false
+        })
+            .populate('userId', 'name phone avatar')
+            .exec();
+
+        if (!trip) {
+            throw new NotFoundException('Trip not found');
+        }
+
+        return trip;
+    }
 }
