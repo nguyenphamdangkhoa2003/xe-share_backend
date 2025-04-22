@@ -44,7 +44,10 @@ const searchTripSchema = z.object({
   departureDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: 'Invalid departure date',
   }),
-  seats: z.number().min(1, 'At least 1 seat required').optional().default(1),
+  seats: z.preprocess(
+    (val) => val ? Number(val) : 1,
+    z.number().min(1, 'At least 1 seat required').default(1)
+  ),
 });
 
 // TripController
@@ -120,7 +123,7 @@ export class TripController {
   });
 
   public searchTrips = asyncHandler(async (req: Request, res: Response) => {
-    const { origin, destination, departureDate, seats } = searchTripSchema.parse(req.body);
+    const { origin, destination, departureDate, seats } = searchTripSchema.parse(req.query);
 
     const trips = await this.tripService.searchTrips({
       origin,
